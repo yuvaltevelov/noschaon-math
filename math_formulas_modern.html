@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>דף נוסחאות מתמטיקה</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['\(', '\)']],
+                displayMath: [['\[', '\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --bg-light: #f8fafc;
+            --bg-dark: #0f172a;
+            --card-light: #ffffff;
+            --card-dark: #1e293b;
+            --text-light: #1e293b;
+            --text-dark: #f1f5f9;
+            --border: #e2e8f0;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-light);
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark {
+            background: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+            border-radius: var(--radius);
+            margin-bottom: 30px;
+            color: white;
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Heebo', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        body.dark .btn-outline {
+            border-color: var(--text-dark);
+            color: var(--text-dark);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Search */
+        .search-container {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 18px 50px 18px 25px;
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-family: 'Heebo', sans-serif;
+            background: var(--card-light);
+            color: var(--text-light);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        body.dark .search-box {
+            background: var(--card-dark);
+            color: var(--text-dark);
+            border-color: #334155;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.3em;
+            color: var(--primary);
+            pointer-events: none;
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: var(--card-light);
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        body.dark .section-card {
+            background: var(--card-dark);
+            border-color: #334155;
+        }
+
+        .section-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .section-header {
+            padding: 25px 30px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+
+        .section-header:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+        }
+
+        .section-header h2 {
+            font-size: 1.6em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-icon {
+            font-size: 1.2em;
+        }
+
+        .toggle-btn {
+            font-size: 1.5em;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .toggle-btn.rotated {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+
+        .section-content.open {
+            max-height: 10000px;
+            transition: max-height 0.6s ease-in;
+        }
+
+        .section-body {
+            padding: 30px;
+        }
+
+        /* Formula Cards */
+        .formula-item {
+            padding: 25px;
+            margin-bottom: 25px;
+            background: var(--bg-light);
+            border-radius: 12px;
+            border-right: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        body.dark .formula-item {
+            background: var(--bg-dark);
+        }
+
+        .formula-item:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .formula-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .formula-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        body.dark .formula-title {
+            color: var(--secondary);
+        }
+
+        .formula-box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 1.3em;
+            box-shadow: 0 2px 10px var(--shadow);
+            border: 2px solid #e5e7eb;
+        }
+
+        body.dark .formula-box {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-right: 4px solid #3b82f6;
+        }
+
+        body.dark .example-box {
+            background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%);
+        }
+
+        .example-title {
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        body.dark .example-title {
+            color: #93c5fd;
+        }
+
+        .explanation-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-right: 4px solid var(--warning);
+        }
+
+        body.dark .explanation-box {
+            background: linear-gradient(135deg, #451a03 0%, #78350f 100%);
+        }
+
+        .explanation-title {
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        body.dark .explanation-title {
+            color: #fbbf24;
+        }
+
+        /* Tips Box */
+        .tips-section {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            color: white;
+            padding: 40px;
+            border-radius: var(--radius);
+            margin-top: 30px;
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.3);
+        }
+
+        .tips-section h3 {
+            font-size: 2em;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        .tips-list {
+            list-style: none;
+            display: grid;
+            gap: 15px;
+        }
+
+        .tips-list li {
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+
+        .tips-list li:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(-5px);
+        }
+
+        .tips-list li::before {
+            content: "✓";
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #d1fae5;
+            flex-shrink: 0;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 1.6em;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 30px rgba(99, 102, 241, 0.6);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .header p {
+                font-size: 1em;
+            }
+
+            .section-header h2 {
+                font-size: 1.3em;
+            }
+
+            .formula-box {
+                font-size: 1.1em;
+            }
+
+            .theme-toggle {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3em;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+
+            .controls, .search-container, .theme-toggle {
+                display: none;
+            }
+
+            .section-content {
+                max-height: none !important;
+            }
+
+            .section-card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Highlight for search */
+        .highlight {
+            background: #fef08a;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        body.dark .highlight {
+            background: #ca8a04;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" aria-label="החלף ערכת נושא">
+        🌙
+    </button>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>📐 דף נוסחאות מתמטיקה</h1>
+                <p>כל הנוסחאות שאתה צריך למבחן - מסודר, ברור ונוח</p>
+            </div>
+        </header>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button class="btn btn-primary" id="expandAll">
+                📂 פתח הכל
+            </button>
+            <button class="btn btn-outline" id="collapseAll">
+                📁 סגור הכל
+            </button>
+            <button class="btn btn-outline" onclick="window.print()">
+                🖨️ הדפס
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="search-container">
+            <input 
+                type="text" 
+                class="search-box" 
+                id="searchInput"
+                placeholder="חפש נוסחה, נושא או מילת מפתח..."
+            >
+            <span class="search-icon">🔍</span>
+        </div>
+
+        <!-- Content -->
+        <div id="content">
+
+            <!-- Section 1 -->
+            <div class="section-card" data-keywords="חזקות שורשים כפל חילוק בסיס מעריך">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h2><span class="section-icon">🔢</span> חזקות ושורשים</h2>
+                    <span class="toggle-btn">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="section-body">
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ כפל חזקות באותו בסיס</div>
+                            <div class="formula-box">
+                                \(a^m \cdot a^n = a^{m+n}\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \(2^3 \cdot 2^5 = 2^{3+5} = 2^8 = 256\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                כשמכפילים חזקות עם אותו בסיס, שומרים את הבסיס ומחברים את המעריכים.
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ חילוק חזקות באותו בסיס</div>
+                            <div class="formula-box">
+                                \(\dfrac{a^m}{a^n} = a^{m-n}\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \(\dfrac{3^7}{3^4} = 3^{7-4} = 3^3 = 27\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                כשמחלקים חזקות עם אותו בסיס, שומרים את הבסיס ומחסרים את המעריכים.
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ חזקה של חזקה</div>
+                            <div class="formula-box">
+                                \((a^m)^n = a^{m \cdot n}\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \((2^3)^4 = 2^{3 \cdot 4} = 2^{12}\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                כשיש חזקה על חזקה, שומרים את הבסיס וכופלים את המעריכים.
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ חזקה שלילית</div>
+                            <div class="formula-box">
+                                \(a^{-n} = \dfrac{1}{a^n}\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \(5^{-2} = \dfrac{1}{5^2} = \dfrac{1}{25}\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                חזקה שלילית הופכת את המספר לשבר - מה שהיה למעלה יורד למטה.
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ חזקה שברית (שורש)</div>
+                            <div class="formula-box">
+                                \(a^{\frac{1}{n}} = \sqrt[n]{a}\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \(8^{\frac{1}{3}} = \sqrt[3]{8} = 2\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                חזקה של חצי = שורש ריבועי, שליש = שורש שלישי וכו'.
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ שורש כפול חזקה</div>
+                            <div class="formula-box">
+                                \(\sqrt{a^n} = a^{\frac{n}{2}}\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \(\sqrt{x^6} = x^3\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                שורש "מוריד" את החזקה לחצי (מחלק ב-2).
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2 -->
+            <div class="section-card" data-keywords="משוואה ריבועית שורשים דיסקרימיננטה פירוק">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h2><span class="section-icon">📊</span> משוואות ריבועיות</h2>
+                    <span class="toggle-btn">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="section-body">
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ נוסחת השורשים</div>
+                            <div class="formula-box">
+                                \(ax^2 + bx + c = 0\)
+                                <br><br>
+                                \(x_{1,2} = \dfrac{-b \pm \sqrt{b^2 - 4ac}}{2a}\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \(x^2 - 5x + 6 = 0\)<br>
+                                \(a=1, b=-5, c=6\)<br>
+                                \(x = \dfrac{5 \pm \sqrt{25-24}}{2} = \dfrac{5 \pm 1}{2}\)<br>
+                                פתרונות: \(x=3\) או \(x=2\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                מזהים את a, b, c ומציבים בנוסחה. הסימן ± נותן 2 פתרונות.
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ הדיסקרימיננטה</div>
+                            <div class="formula-box">
+                                \(\Delta = b^2 - 4ac\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \(x^2 + 2x + 5 = 0\)<br>
+                                \(\Delta = 4 - 20 = -16 < 0\) ← אין פתרון!
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                • \(\Delta > 0\) ← 2 פתרונות<br>
+                                • \(\Delta = 0\) ← פתרון אחד<br>
+                                • \(\Delta < 0\) ← אין פתרונות
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ נוסחאות כפל מקוצר</div>
+                            <div class="formula-box">
+                                \((a+b)^2 = a^2 + 2ab + b^2\)<br><br>
+                                \((a-b)^2 = a^2 - 2ab + b^2\)<br><br>
+                                \(a^2 - b^2 = (a+b)(a-b)\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \(x^2 - 9 = x^2 - 3^2 = (x+3)(x-3)\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                נוסחאות אלה חוסכות זמן בפירוק וחישובים מהירים.
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3 -->
+            <div class="section-card" data-keywords="מעריכי חזקה בסיס המרה">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h2><span class="section-icon">⚡</span> משוואות מעריכיות</h2>
+                    <span class="toggle-btn">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="section-body">
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ עקרון השוואת בסיסים</div>
+                            <div class="formula-box">
+                                אם \(a^{f(x)} = a^{g(x)}\) אז \(f(x) = g(x)\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \(2^{3x-1} = 2^5\)<br>
+                                פתרון: \(3x-1 = 5 \rightarrow x=2\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                ממירים את שני הצדדים לאותו בסיס, ואז המעריכים שווים.
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ המרות בסיסים נפוצות</div>
+                            <div class="formula-box">
+                                \(4 = 2^2\) | \(8 = 2^3\) | \(16 = 2^4\)<br><br>
+                                \(9 = 3^2\) | \(27 = 3^3\) | \(81 = 3^4\)<br><br>
+                                \(\dfrac{1}{a} = a^{-1}\) | \(\sqrt{a} = a^{\frac{1}{2}}\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \(4^x = 2^5\)<br>
+                                \((2^2)^x = 2^5 \rightarrow 2^{2x} = 2^5\)<br>
+                                \(2x = 5 \rightarrow x = 2.5\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                הופכים הכל לאותו בסיס. זכור את ההמרות האלה בעל פה!
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4 -->
+            <div class="section-card" data-keywords="נגזרת גזירה חזקה מכפלה מנה">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h2><span class="section-icon">📈</span> נגזרות</h2>
+                    <span class="toggle-btn">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="section-body">
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ נגזרות בסיסיות</div>
+                            <div class="formula-box">
+                                \((c)' = 0\)<br><br>
+                                \((x^n)' = n \cdot x^{n-1}\)<br><br>
+                                \((e^x)' = e^x\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \((5)' = 0\)<br>
+                                \((x^5)' = 5x^4\)<br>
+                                \((e^x)' = e^x\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                קבוע = 0, חזקה מורידים לפני ומחסרים 1, e נשאר.
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ נגזרת של סכום וכפל בקבוע</div>
+                            <div class="formula-box">
+                                \((f + g)' = f' + g'\)<br><br>
+                                \((k \cdot f)' = k \cdot f'\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \((x^3 + x^2)' = 3x^2 + 2x\)<br>
+                                \((5x^3)' = 5 \cdot 3x^2 = 15x^2\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                גוזרים כל איבר בנפרד, קבוע יוצא החוצה.
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ נגזרת של מכפלה</div>
+                            <div class="formula-box">
+                                \((u \cdot v)' = u' \cdot v + u \cdot v'\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \((x^2 \cdot e^x)' = 2x \cdot e^x + x^2 \cdot e^x\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                נגזרת ראשון × שני + ראשון × נגזרת שני.
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ נגזרת של מנה (שבר)</div>
+                            <div class="formula-box">
+                                \(\left(\dfrac{u}{v}\right)' = \dfrac{u' \cdot v - u \cdot v'}{v^2}\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \(\left(\dfrac{x^2}{x+1}\right)' = \dfrac{2x(x+1) - x^2 \cdot 1}{(x+1)^2}\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                למעלה: (נגזרת מונה × מכנה) - (מונה × נגזרת מכנה). למטה: מכנה²
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ נגזרת של פונקציה מורכבת</div>
+                            <div class="formula-box">
+                                \((e^{f(x)})' = e^{f(x)} \cdot f'(x)\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \((e^{2x})' = e^{2x} \cdot 2 = 2e^{2x}\)<br>
+                                \((e^{x^2})' = e^{x^2} \cdot 2x\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                כשיש פונקציה בחזקת e, גוזרים גם את הפונקציה.
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 5 -->
+            <div class="section-card" data-keywords="חקירה קיצון מקסימום מינימום עלייה ירידה">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h2><span class="section-icon">🔍</span> חקירת פונקציה</h2>
+                    <span class="toggle-btn">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="section-body">
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ שלב 1: תחום הגדרה</div>
+                            <div class="formula-box">
+                                • פולינום: כל \(x\)<br>
+                                • שבר: מכנה ≠ 0<br>
+                                • שורש: מה שבשורש ≥ 0
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \(y = \dfrac{1}{x-2}\) → תחום: כל \(x\) חוץ מ-\(x=2\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                בודקים איפה הפונקציה לא מוגדרת.
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ שלב 2: חיתוך עם צירים</div>
+                            <div class="formula-box">
+                                חיתוך ציר X: \(y=0\)<br>
+                                חיתוך ציר Y: \(x=0\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \(y = x^2 - 4\)<br>
+                                ציר X: \(x = \pm 2\) → \((2,0), (-2,0)\)<br>
+                                ציר Y: \(y = -4\) → \((0,-4)\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                נקודות אלה עוזרות לצייר את הגרף.
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ שלב 3: נקודות קיצון</div>
+                            <div class="formula-box">
+                                1. גוזרים: \(f'(x)\)<br>
+                                2. משווים לאפס: \(f'(x) = 0\)<br>
+                                3. בודקים סימנים<br>
+                                4. מציבים בפונקציה
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \(y = x^2 - 4x + 3\)<br>
+                                \(y' = 2x - 4 = 0 \rightarrow x = 2\)<br>
+                                \(y(2) = -1\) → מינימום: \((2, -1)\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                + → - = מקסימום 📈 | - → + = מינימום 📉
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ שלב 4: עלייה וירידה</div>
+                            <div class="formula-box">
+                                עולה: \(f'(x) > 0\)<br>
+                                יורדת: \(f'(x) < 0\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \(y' = 2x - 4\)<br>
+                                עלייה: \(x > 2\) | ירידה: \(x < 2\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                בודקים איפה הנגזרת חיובית (עולה) ושלילית (יורדת).
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 6 -->
+            <div class="section-card" data-keywords="אינטגרל שטח מסוים בלתי">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h2><span class="section-icon">∫</span> אינטגרלים</h2>
+                    <span class="toggle-btn">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="section-body">
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ אינטגרל בלתי מסוים</div>
+                            <div class="formula-box">
+                                \(\int x^n \, dx = \dfrac{x^{n+1}}{n+1} + C\)<br><br>
+                                \(\int e^x \, dx = e^x + C\)<br><br>
+                                \(\int k \, dx = kx + C\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \(\int x^3 \, dx = \dfrac{x^4}{4} + C\)<br>
+                                \(\int 5 \, dx = 5x + C\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                מוסיפים 1 לחזקה, מחלקים בה, אל תשכח +C!
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ אינטגרל מסוים</div>
+                            <div class="formula-box">
+                                \(\int_a^b f(x) \, dx = F(b) - F(a)\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \(\int_1^3 x^2 \, dx = \left[\dfrac{x^3}{3}\right]_1^3 = \dfrac{27}{3} - \dfrac{1}{3} = \dfrac{26}{3}\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                מחשבים אינטגרל, מציבים גבול עליון מינוס תחתון.
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ חישוב שטחים</div>
+                            <div class="formula-box">
+                                שטח: \(S = \int_a^b f(x) \, dx\)<br><br>
+                                בין 2 פונקציות: \(S = \int_a^b [f(x) - g(x)] \, dx\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                שטח בין \(y=x^2\) לציר X מ-0 עד 2:<br>
+                                \(S = \int_0^2 x^2 \, dx = \dfrac{8}{3}\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                שטח = אינטגרל מסוים של הפונקציה.
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 7 -->
+            <div class="section-card" data-keywords="קו ישר פרבולה שיפוע">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h2><span class="section-icon">📉</span> פונקציות</h2>
+                    <span class="toggle-btn">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="section-body">
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ קו ישר</div>
+                            <div class="formula-box">
+                                \(y = ax + b\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \(y = 2x + 3\)<br>
+                                שיפוע = 2, חיתוך ציר Y = 3
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                \(a\) = שיפוע | \(b\) = חיתוך ציר Y
+                            </div>
+                        </div>
+
+                        <div class="formula-item">
+                            <div class="formula-title">⭐ פרבולה</div>
+                            <div class="formula-box">
+                                \(y = ax^2 + bx + c\)<br><br>
+                                קודקוד: \(x = -\dfrac{b}{2a}\)
+                            </div>
+                            <div class="example-box">
+                                <div class="example-title">📝 דוגמה:</div>
+                                \(y = x^2 - 4x + 3\)<br>
+                                \(x = \dfrac{4}{2} = 2\), \(y(2) = -1\)<br>
+                                קודקוד: \((2,-1)\)
+                            </div>
+                            <div class="explanation-box">
+                                <div class="explanation-title">💡 איך משתמשים:</div>
+                                \(a > 0\) → 😊 למעלה | \(a < 0\) → ☹️ למטה
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Tips -->
+        <section class="tips-section">
+            <h3>💡 טיפים זהב למבחן</h3>
+            <ul class="tips-list">
+                <li>במשוואות רציונליות - תמיד בדוק תחום הגדרה לפני הפתרון</li>
+                <li>במעריכיות - המר הכל לאותו בסיס (2 או 3)</li>
+                <li>בנגזרות מורכבות - עבוד שלב אחר שלב</li>
+                <li>בחקירה - טבלת סימנים היא חובה!</li>
+                <li>באינטגרלים בלתי מסוימים - אל תשכח +C</li>
+                <li>תמיד בדוק את התשובה בהצבה חזרה</li>
+                <li>כתוב נקי וברור - זה עוזר לך ולמבדק</li>
+            </ul>
+        </section>
+
+    </div>
+
+    <script>
+        // Toggle Section
+        function toggleSection(header) {
+            const content = header.nextElementSibling;
+            const toggleBtn = header.querySelector('.toggle-btn');
+
+            content.classList.toggle('open');
+            toggleBtn.classList.toggle('rotated');
+        }
+
+        // Expand All
+        document.getElementById('expandAll').addEventListener('click', function() {
+            document.querySelectorAll('.section-content').forEach(content => {
+                content.classList.add('open');
+            });
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.classList.add('rotated');
+            });
+        });
+
+        // Collapse All
+        document.getElementById('collapseAll').addEventListener('click', function() {
+            document.querySelectorAll('.section-content').forEach(content => {
+                content.classList.remove('open');
+            });
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.classList.remove('rotated');
+            });
+        });
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+
+        themeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark');
+            this.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        // Load saved theme
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark');
+            themeToggle.textContent = '☀️';
+        }
+
+        // Search
+        const searchInput = document.getElementById('searchInput');
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            const sections = document.querySelectorAll('.section-card');
+
+            if (query === '') {
+                sections.forEach(section => {
+                    section.style.display = 'block';
+                });
+                return;
+            }
+
+            sections.forEach(section => {
+                const keywords = section.getAttribute('data-keywords') || '';
+                const text = section.textContent.toLowerCase();
+
+                if (text.includes(query) || keywords.includes(query)) {
+                    section.style.display = 'block';
+                    // Auto-open matching sections
+                    const content = section.querySelector('.section-content');
+                    const toggleBtn = section.querySelector('.toggle-btn');
+                    content.classList.add('open');
+                    toggleBtn.classList.add('rotated');
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
