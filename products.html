@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>קטלוג מוצרים - חיפוש לפי שם או מקט</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+        .search-box {
+            padding: 35px;
+            background: #f8f9fa;
+            border-bottom: 4px solid #667eea;
+        }
+        #searchInput {
+            width: 100%;
+            padding: 18px 25px;
+            font-size: 19px;
+            border: 3px solid #ddd;
+            border-radius: 50px;
+            outline: none;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        #searchInput:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+        }
+        .stats {
+            padding: 20px 40px;
+            background: linear-gradient(90deg, #e9ecef 0%, #f8f9fa 100%);
+            text-align: center;
+            font-size: 18px;
+            color: #495057;
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .table-wrapper {
+            max-height: calc(100vh - 400px);
+            overflow-y: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        th {
+            padding: 18px 20px;
+            text-align: right;
+            font-weight: 700;
+            font-size: 17px;
+            letter-spacing: 0.5px;
+        }
+        td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 16px;
+        }
+        tbody tr {
+            transition: all 0.2s ease;
+        }
+        tbody tr:hover {
+            background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);
+            transform: scale(1.005);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        tbody tr:nth-child(even) {
+            background: #fafbfc;
+        }
+        .product-id {
+            color: #6c757d;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        .product-name {
+            color: #212529;
+            font-weight: 700;
+            font-size: 17px;
+        }
+        .product-code {
+            background: #667eea;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            display: inline-block;
+            font-size: 15px;
+        }
+        .no-results {
+            text-align: center;
+            padding: 80px 40px;
+            font-size: 22px;
+            color: #6c757d;
+        }
+        .no-results-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            font-weight: bold;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            .search-box {
+                padding: 20px;
+            }
+            td, th {
+                padding: 12px 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍾 קטלוג מוצרים מלא</h1>
+            <p class="subtitle">ג'יימס ריצ'רדסון - נתב"ג טרמינל 1 | מחלקת אלכוהול וטבק</p>
+        </header>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 חפש לפי שם מוצר, תיאור או מקט..." autofocus>
+        </div>
+
+        <div class="stats">
+            מציג <span id="resultCount">266</span> מוצרים מתוך <strong>266</strong> סה"כ
+        </div>
+
+        <div class="table-wrapper">
+            <table id="productsTable">
+                <thead>
+                    <tr>
+                        <th style="width: 8%;">מס'</th>
+                        <th style="width: 25%;">שם מוצר</th>
+                        <th style="width: 52%;">תיאור</th>
+                        <th style="width: 15%;">מקט</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div id="noResults" class="no-results" style="display: none;">
+            <div class="no-results-icon">❌</div>
+            <strong>לא נמצאו תוצאות התואמות לחיפוש</strong><br>
+            <small>נסה למחוק חלק מהטקסט או לחפש במילים אחרות</small>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+        {
+                "id": 1,
+                "name": "Tenjiku Yoho",
+                "description": "Tenjiku Gin Japanese Craft 37.5%",
+                "code": "448501"
+        },
+        {
+                "id": 2,
+                "name": "Brothers Blend",
+                "description": "Brothers is Dry Gin by Chris & Yakov",
+                "code": "447888"
+        },
+        {
+                "id": 3,
+                "name": "Brothers Blend",
+                "description": "Brothers is Dry Gin by Chris & Yakov",
+                "code": "447887"
+        },
+        {
+                "id": 4,
+                "name": "Brothers Blend",
+                "description": "Brothers is Dry Gin by Chris & Yakov",
+                "code": "447886"
+        },
+        {
+                "id": 5,
+                "name": "MOZART",
+                "description": "Mozart Chocolate Cream Pumpkin Spice 15%",
+                "code": "447945"
+        },
+        {
+                "id": 6,
+                "name": "EPRATA",
+                "description": "Eprata Israeli Red Grape 18% 50cl",
+                "code": "447873"
+        },
+        {
+                "id": 7,
+                "name": "EPRATA",
+                "description": "Eprata Israeli Red Grape Ananas 18% 50cl",
+                "code": "447874"
+        },
+        {
+                "id": 8,
+                "name": "HRDLORICKA",
+                "description": "Sliwovice Plunska Dámá77 35%",
+                "code": "447775"
+        },
+        {
+                "id": 9,
+                "name": "BAT",
+                "description": "Bat Hendricks Bubblegum 35%",
+                "code": "447951"
+        },
+        {
+                "id": 10,
+                "name": "YAMAZAKI",
+                "description": "Kavalan Limited Shan. Taiwan Yeo 43%",
+                "code": "447957"
+        },
+        {
+                "id": 11,
+                "name": "FDH",
+                "description": "FDH Old Pulteney",
+                "code": "447889"
+        },
+        {
+                "id": 12,
+                "name": "Refaeli",
+                "description": "Yuval Spirits Proposed Rum",
+                "code": "448511"
+        },
+        {
+                "id": 13,
+                "name": "RUBIN MILLS",
+                "description": "The Kitchen Deoch Strudel Whisky 46%",
+                "code": "447904"
+        },
+        {
+                "id": 14,
+                "name": "RUBIN MILLS",
+                "description": "Business is YODA 46% 100ML",
+                "code": "447902"
+        },
+        {
+                "id": 15,
+                "name": "RUBIN MILLS",
+                "description": "Business is YODA 46%",
+                "code": "447901"
+        },
+        {
+                "id": 16,
+                "name": "Tere mana",
+                "description": "Premiere Cellular Peated Rum",
+                "code": "447705"
+        },
+        {
+                "id": 17,
+                "name": "Gin Mata",
+                "description": "Gin Mata Modernista 41.5%",
+                "code": "447741"
+        },
+        {
+                "id": 18,
+                "name": "Siete Millas",
+                "description": "Specialty Gift Complimentary Story Mix",
+                "code": "447708"
+        },
+        {
+                "id": 19,
+                "name": "Shoes Hat",
+                "description": "Our Retail Report Reply Whiskey 43%",
+                "code": "447709"
+        },
+        {
+                "id": 20,
+                "name": "SINGLETON",
+                "description": "The Singleton Glendullan Malt Whisky 43%",
+                "code": "448314"
+        },
+        {
+                "id": 21,
+                "name": "SINGLETON",
+                "description": "The Singleton Scotland Dufftown 43%",
+                "code": "448313"
+        },
+        {
+                "id": 22,
+                "name": "air",
+                "description": "air",
+                "code": "447716"
+        },
+        {
+                "id": 23,
+                "name": "Tequila Yoko",
+                "description": "Tequila Yoko",
+                "code": "448314"
+        },
+        {
+                "id": 24,
+                "name": "J.BARRELS",
+                "description": "Three Barrels Blended 3 Year 43%",
+                "code": "448077"
+        },
+        {
+                "id": 25,
+                "name": "DIPLOMAT",
+                "description": "Diplomat Rum",
+                "code": "101014"
+        },
+        {
+                "id": 26,
+                "name": "DON JULIO",
+                "description": "Don Julio Tequila Reposado Anejo 38%",
+                "code": "96777"
+        },
+        {
+                "id": 27,
+                "name": "JACK DANIELS",
+                "description": "Jack Daniels Honey",
+                "code": "448311"
+        },
+        {
+                "id": 28,
+                "name": "Speciallas",
+                "description": "Speciallas Malt Vodka Art Reserve Anejo 43%",
+                "code": "448312"
+        },
+        {
+                "id": 29,
+                "name": "Speciallas",
+                "description": "Speciallas Malt Vodka Art Reserve Anejo 43%",
+                "code": "448313"
+        },
+        {
+                "id": 30,
+                "name": "Speciallas",
+                "description": "Speciallas Malt Vodka Art Reserve Anejo 43%",
+                "code": "448314"
+        },
+        {
+                "id": 31,
+                "name": "MAXIMUS",
+                "description": "Ron Stanfield Anejo 37% R05 Santo",
+                "code": "447951"
+        },
+        {
+                "id": 32,
+                "name": "MAXIMUS",
+                "description": "Ron Stanfield Anejo Barrel Reserve",
+                "code": "447956"
+        },
+        {
+                "id": 33,
+                "name": "BOYMADGE",
+                "description": "Boymadge 9 Isle Single Malt Scotch Whisky 43%",
+                "code": "447783"
+        },
+        {
+                "id": 34,
+                "name": "BOYMADGE",
+                "description": "Boymadge 9 Isle Single Malt Scotch Whisky 43%",
+                "code": "447783"
+        },
+        {
+                "id": 35,
+                "name": "ROYAL SALUTE",
+                "description": "Royal Salute Steel Barrel",
+                "code": "447766"
+        },
+        {
+                "id": 36,
+                "name": "ROYAL SALUTE",
+                "description": "Royal Salute Steel Barrel",
+                "code": "447767"
+        },
+        {
+                "id": 37,
+                "name": "Tomintoul",
+                "description": "Tomintoul Tlàth Single Malt Scotch Whisky",
+                "code": "448301"
+        },
+        {
+                "id": 38,
+                "name": "Tomintoul",
+                "description": "Tomintoul Tlàth Single Malt Scotch Whisky",
+                "code": "448302"
+        },
+        {
+                "id": 39,
+                "name": "Juncia",
+                "description": "Tomintoul Duende Simple Malt Scotch Whisky",
+                "code": "448303"
+        },
+        {
+                "id": 40,
+                "name": "Kactus Milky",
+                "description": "Kactus Milky Whit Tia Maria Shot",
+                "code": "448095"
+        },
+        {
+                "id": 41,
+                "name": "Gen Scoria",
+                "description": "Gen Scotaas Tulam Ginseng Simple Malt 43%",
+                "code": "448096"
+        },
+        {
+                "id": 42,
+                "name": "KAHLUA",
+                "description": "Kahlua Limited Premium White Label 43%",
+                "code": "96510"
+        },
+        {
+                "id": 43,
+                "name": "KAHLUA",
+                "description": "Kahlua Limited Premium White Label 43%",
+                "code": "96511"
+        },
+        {
+                "id": 44,
+                "name": "ROYAL SALUTE",
+                "description": "Royal Salute",
+                "code": "448505"
+        },
+        {
+                "id": 45,
+                "name": "BOYMORE",
+                "description": "Boymore 9 Isle Single Malt Scotch Whisky 43%",
+                "code": "448505"
+        },
+        {
+                "id": 46,
+                "name": "BOYMORE",
+                "description": "Boymore 9 Isle Single Malt Scotch Whisky 43%",
+                "code": "448505"
+        },
+        {
+                "id": 47,
+                "name": "LAPROAIG",
+                "description": "Laproaig 12 Isle Single Malt Scotch Whisky",
+                "code": "448505"
+        },
+        {
+                "id": 48,
+                "name": "Hakushu",
+                "description": "Hakushu 12y Japanese Single Malt Whisky 43%",
+                "code": "448505"
+        },
+        {
+                "id": 49,
+                "name": "Request",
+                "description": "Request",
+                "code": "448505"
+        },
+        {
+                "id": 50,
+                "name": "Aberlour",
+                "description": "Aberlour Shuram Sherry Cask 43%",
+                "code": "448505"
+        },
+        {
+                "id": 51,
+                "name": "Aberlour",
+                "description": "Aberlour 2 Double Cask 40%",
+                "code": "448505"
+        },
+        {
+                "id": 52,
+                "name": "TENPALE",
+                "description": "Tenpale On Japanese Craft 37.5%",
+                "code": "448501"
+        },
+        {
+                "id": 53,
+                "name": "Tamnavulin",
+                "description": "Yamuna Allure On Tempo Cyrillic 40%",
+                "code": "448904"
+        },
+        {
+                "id": 54,
+                "name": "BAKARDI",
+                "description": "Alcohol de Pollo Dry White 40%",
+                "code": "447004"
+        },
+        {
+                "id": 55,
+                "name": "Holanda",
+                "description": "Holanda General Arterial Wine - Dry",
+                "code": "447003"
+        },
+        {
+                "id": 56,
+                "name": "Holanda",
+                "description": "Holanda General Arterial Wine - Dry",
+                "code": "447002"
+        },
+        {
+                "id": 57,
+                "name": "ROYAL SALUTE",
+                "description": "Royal Salute Red Label 43%",
+                "code": "447618"
+        },
+        {
+                "id": 58,
+                "name": "ROYAL SALUTE",
+                "description": "Royal Salute Red Label 43%",
+                "code": "447617"
+        },
+        {
+                "id": 59,
+                "name": "ROYAL SALUTE",
+                "description": "Royal Salute Red Label Angra 43%",
+                "code": "447616"
+        },
+        {
+                "id": 60,
+                "name": "JACK DANIELS",
+                "description": "Jack Daniels Apple 35%",
+                "code": "447286"
+        },
+        {
+                "id": 61,
+                "name": "DON JULIO",
+                "description": "Don Julio Tequila Blanco Anejo 38%",
+                "code": "447287"
+        },
+        {
+                "id": 62,
+                "name": "RIXON MIXXX",
+                "description": "Speciallas Malt Vodka Art Reserve Anejo 43%",
+                "code": "447288"
+        },
+        {
+                "id": 63,
+                "name": "NIXON MIXXX",
+                "description": "Nixon Thailand AA Online 43%",
+                "code": "447291"
+        },
+        {
+                "id": 64,
+                "name": "NIXON",
+                "description": "Pegasus Art Online Whisky 43%",
+                "code": "447318"
+        },
+        {
+                "id": 65,
+                "name": "FERRARI",
+                "description": "Revel AA Online Whisky 43%",
+                "code": "447317"
+        },
+        {
+                "id": 66,
+                "name": "Speciallas",
+                "description": "Speciallas Story Russian Anjos 7th 43%",
+                "code": "447337"
+        },
+        {
+                "id": 67,
+                "name": "Niki Nixon",
+                "description": "Niki Home AA Online Whisky 43%",
+                "code": "447336"
+        },
+        {
+                "id": 68,
+                "name": "ROYAL SALUTE",
+                "description": "Royal Salute 7th Online 43%",
+                "code": "447376"
+        },
+        {
+                "id": 69,
+                "name": "ROYAL SALUTE",
+                "description": "Royal Salute 7th Online 43%",
+                "code": "447376"
+        },
+        {
+                "id": 70,
+                "name": "AO",
+                "description": "AO",
+                "code": "447313"
+        },
+        {
+                "id": 71,
+                "name": "Nicky Nixon",
+                "description": "Nicky Nixon Whisky 43%",
+                "code": "447316"
+        },
+        {
+                "id": 72,
+                "name": "ROYAL SALUTE",
+                "description": "Royal Salute 7th 43%",
+                "code": "447376"
+        },
+        {
+                "id": 73,
+                "name": "SINGLETON",
+                "description": "The Singleton Reserve AA Online 43%",
+                "code": "447476"
+        },
+        {
+                "id": 74,
+                "name": "M&A Aged",
+                "description": "The Singleton Online AA Reserve",
+                "code": "447468"
+        },
+        {
+                "id": 75,
+                "name": "M&A Aged",
+                "description": "The Singleton Online AA Reserve",
+                "code": "447469"
+        },
+        {
+                "id": 76,
+                "name": "TULLINDORE DEW",
+                "description": "Tullmore Dew Single Malt 43%",
+                "code": "448076"
+        },
+        {
+                "id": 77,
+                "name": "BAUENTNE",
+                "description": "Baiente Glenlivet 12 Yo 40%",
+                "code": "448018"
+        },
+        {
+                "id": 78,
+                "name": "BAUENTNE",
+                "description": "Baiente Single Malt 43%",
+                "code": "448018"
+        },
+        {
+                "id": 79,
+                "name": "Ben-Bein",
+                "description": "Ben-Irish Classic Blend 40%",
+                "code": "448018"
+        },
+        {
+                "id": 80,
+                "name": "Ben-Irish",
+                "description": "Teh An Irish Na Yo 40%",
+                "code": "448018"
+        },
+        {
+                "id": 81,
+                "name": "Bushmills",
+                "description": "Bushmills Irish Whiskey",
+                "code": "447896"
+        },
+        {
+                "id": 82,
+                "name": "Cooley",
+                "description": "Cooley Irish Whiskey",
+                "code": "447897"
+        },
+        {
+                "id": 83,
+                "name": "BACARDIS",
+                "description": "Bacardi Irish Whiskey",
+                "code": "447898"
+        },
+        {
+                "id": 84,
+                "name": "Kosher",
+                "description": "Kosher",
+                "code": "44"
+        },
+        {
+                "id": 85,
+                "name": "BAUENTNE",
+                "description": "Baiente Yo 40%",
+                "code": "44"
+        },
+        {
+                "id": 86,
+                "name": "GLENDRONACH",
+                "description": "Glendronach 12 Jahre Grade A",
+                "code": "44"
+        },
+        {
+                "id": 87,
+                "name": "BAUENTNE",
+                "description": "Baiente Yo 40% Single",
+                "code": "44"
+        },
+        {
+                "id": 88,
+                "name": "PACRIS",
+                "description": "Pacris",
+                "code": "447896"
+        },
+        {
+                "id": 89,
+                "name": "MCCALLAN",
+                "description": "McCellan",
+                "code": "447896"
+        },
+        {
+                "id": 90,
+                "name": "HIGHLAND PARK",
+                "description": "Highland Park",
+                "code": "447896"
+        },
+        {
+                "id": 91,
+                "name": "BAUENTNE",
+                "description": "Baiente Single",
+                "code": "447896"
+        },
+        {
+                "id": 92,
+                "name": "COOPERS",
+                "description": "Coopers Yo 40%",
+                "code": "447896"
+        },
+        {
+                "id": 93,
+                "name": "JAMESON",
+                "description": "Jameson",
+                "code": "225070"
+        },
+        {
+                "id": 94,
+                "name": "BAILIN TREE",
+                "description": "Bailin Tree Yo La 40%",
+                "code": "101910"
+        },
+        {
+                "id": 95,
+                "name": "COOPERS",
+                "description": "Coopers Irish 40%",
+                "code": "101909"
+        },
+        {
+                "id": 96,
+                "name": "JAMESON",
+                "description": "Jameson 40%",
+                "code": "101910"
+        },
+        {
+                "id": 97,
+                "name": "PARK GLENELG",
+                "description": "Park Glenelg Irish Yo Whisky 40%",
+                "code": "225070"
+        },
+        {
+                "id": 98,
+                "name": "JARC",
+                "description": "Jarc",
+                "code": "225070"
+        },
+        {
+                "id": 99,
+                "name": "MART ELL",
+                "description": "Martell",
+                "code": "101820"
+        },
+        {
+                "id": 100,
+                "name": "GRANT",
+                "description": "Grant",
+                "code": "101820"
+        },
+        {
+                "id": 101,
+                "name": "JURA",
+                "description": "Jura Ten 10yo Malt Scotch 43% Gm",
+                "code": "448078"
+        },
+        {
+                "id": 102,
+                "name": "JURA",
+                "description": "Jura Diurach Malt Scotch 40% Gm",
+                "code": "448078"
+        },
+        {
+                "id": 103,
+                "name": "THE DALMORE",
+                "description": "The Dalmore",
+                "code": "448078"
+        },
+        {
+                "id": 104,
+                "name": "HIGHLAND PARK",
+                "description": "Highland Park",
+                "code": "448078"
+        },
+        {
+                "id": 105,
+                "name": "GHAS GHRILL",
+                "description": "Ghas Ghrill",
+                "code": "448078"
+        },
+        {
+                "id": 106,
+                "name": "MONTECRISTO",
+                "description": "Montecristo",
+                "code": "448078"
+        },
+        {
+                "id": 107,
+                "name": "JIMBEAM",
+                "description": "Jim Beam",
+                "code": "448078"
+        },
+        {
+                "id": 108,
+                "name": "BUSHI MILLE",
+                "description": "Bushi Mille Irish Whiskey 40%",
+                "code": "448332"
+        },
+        {
+                "id": 109,
+                "name": "GLENMORANGIE",
+                "description": "Glenmorangie 10 Year",
+                "code": "447865"
+        },
+        {
+                "id": 110,
+                "name": "BACLAYS",
+                "description": "Baclays",
+                "code": "447866"
+        },
+        {
+                "id": 111,
+                "name": "BACARDI SPICE",
+                "description": "Bacardi Spice",
+                "code": "447867"
+        },
+        {
+                "id": 112,
+                "name": "ROYAL",
+                "description": "Royal",
+                "code": "447878"
+        },
+        {
+                "id": 113,
+                "name": "BACARDI",
+                "description": "Bacardi",
+                "code": "448356"
+        },
+        {
+                "id": 114,
+                "name": "TULLAMORE DEW",
+                "description": "Tullamore Dew",
+                "code": "448076"
+        },
+        {
+                "id": 115,
+                "name": "MILK",
+                "description": "Milk & Honey Element Pear Cake",
+                "code": "447894"
+        },
+        {
+                "id": 116,
+                "name": "GHAS GHIRELL",
+                "description": "Ghas Ghirell Wine Museum Matured Cake 45%",
+                "code": "447893"
+        },
+        {
+                "id": 117,
+                "name": "MONTECRISTO",
+                "description": "Montecristo",
+                "code": "447892"
+        },
+        {
+                "id": 118,
+                "name": "BACHEY GABRIELSEN",
+                "description": "Bachey Gabrielsen Rare",
+                "code": "448321"
+        },
+        {
+                "id": 119,
+                "name": "BACHEY GABRIELSEN",
+                "description": "Bachey Gabrielsen",
+                "code": "448320"
+        },
+        {
+                "id": 120,
+                "name": "BACHEY GABRIELSEN",
+                "description": "Bachey Gabrielsen",
+                "code": "448324"
+        },
+        {
+                "id": 121,
+                "name": "BACRHE",
+                "description": "Bacrhe",
+                "code": "447870"
+        },
+        {
+                "id": 122,
+                "name": "HENNESSY",
+                "description": "Hennessy",
+                "code": "447870"
+        },
+        {
+                "id": 123,
+                "name": "JACK",
+                "description": "Jack",
+                "code": "447870"
+        },
+        {
+                "id": 124,
+                "name": "monkey shoulder",
+                "description": "Monkey Shoulder Scotch Whisky",
+                "code": "447220"
+        },
+        {
+                "id": 125,
+                "name": "JACK DANIELS",
+                "description": "Jack Daniels",
+                "code": "447287"
+        },
+        {
+                "id": 126,
+                "name": "BODI NIST",
+                "description": "Bodi Nist",
+                "code": "447161"
+        },
+        {
+                "id": 127,
+                "name": "ROYAL",
+                "description": "Royal",
+                "code": "447168"
+        },
+        {
+                "id": 128,
+                "name": "SHAGELI",
+                "description": "Shageli",
+                "code": "447168"
+        },
+        {
+                "id": 129,
+                "name": "MOCHA",
+                "description": "Mocha",
+                "code": "447814"
+        },
+        {
+                "id": 130,
+                "name": "HEAM",
+                "description": "Heam",
+                "code": "447803"
+        },
+        {
+                "id": 131,
+                "name": "M&H",
+                "description": "M&H",
+                "code": "447803"
+        },
+        {
+                "id": 132,
+                "name": "M&H",
+                "description": "M&H",
+                "code": "447803"
+        },
+        {
+                "id": 133,
+                "name": "M&H",
+                "description": "M&H",
+                "code": "447803"
+        },
+        {
+                "id": 134,
+                "name": "BACHEY GABRIELSEN",
+                "description": "Bachey Gabrielsen Blue Champagne Finish",
+                "code": "448324"
+        },
+        {
+                "id": 135,
+                "name": "BACHEY GABRIELSEN",
+                "description": "Bachey Gabrielsen Blue Champagne Finish",
+                "code": "448324"
+        },
+        {
+                "id": 136,
+                "name": "BACHEY GABRIELSEN",
+                "description": "Bachey Gabrielsen",
+                "code": "448320"
+        },
+        {
+                "id": 137,
+                "name": "GH De Groot",
+                "description": "GH De Groot",
+                "code": "447860"
+        },
+        {
+                "id": 138,
+                "name": "SOUTHERN",
+                "description": "Southern",
+                "code": "447859"
+        },
+        {
+                "id": 139,
+                "name": "BISHI MILLE",
+                "description": "Bishi Mille",
+                "code": "448332"
+        },
+        {
+                "id": 140,
+                "name": "BISHI MILLE",
+                "description": "Bishi Mille",
+                "code": "448331"
+        },
+        {
+                "id": 141,
+                "name": "Aperol",
+                "description": "Aperol",
+                "code": "101388"
+        },
+        {
+                "id": 142,
+                "name": "Nicky Nixon",
+                "description": "Nicky Nixon",
+                "code": "447316"
+        },
+        {
+                "id": 143,
+                "name": "FERRARI",
+                "description": "Ferrari Shovel Wine",
+                "code": "447317"
+        },
+        {
+                "id": 144,
+                "name": "Speciallas",
+                "description": "Speciallas",
+                "code": "447337"
+        },
+        {
+                "id": 145,
+                "name": "ROYAL SALUTE",
+                "description": "Royal Salute 7",
+                "code": "447376"
+        },
+        {
+                "id": 146,
+                "name": "ROYAL SALUTE",
+                "description": "Royal Salute 7",
+                "code": "447376"
+        },
+        {
+                "id": 147,
+                "name": "ROYAL SALUTE",
+                "description": "Royal Salute",
+                "code": "447376"
+        },
+        {
+                "id": 148,
+                "name": "A.O",
+                "description": "A.O",
+                "code": "447313"
+        },
+        {
+                "id": 149,
+                "name": "Speciallas",
+                "description": "Speciallas",
+                "code": "447313"
+        },
+        {
+                "id": 150,
+                "name": "MAKRI",
+                "description": "Makri",
+                "code": "447665"
+        },
+        {
+                "id": 151,
+                "name": "UCHROICS",
+                "description": "Uchroics",
+                "code": "447665"
+        },
+        {
+                "id": 152,
+                "name": "Kevlar",
+                "description": "Kevlar",
+                "code": "447665"
+        },
+        {
+                "id": 153,
+                "name": "Licor 43",
+                "description": "Licor 43 Oranchoko",
+                "code": "447663"
+        },
+        {
+                "id": 154,
+                "name": "Licor 43",
+                "description": "Licor 43 Madeira",
+                "code": "447664"
+        },
+        {
+                "id": 155,
+                "name": "Licor 43",
+                "description": "Licor 43 Donut Madeira",
+                "code": "447665"
+        },
+        {
+                "id": 156,
+                "name": "KEY VENTURE",
+                "description": "Key Venture",
+                "code": "447485"
+        },
+        {
+                "id": 157,
+                "name": "NOAR SENTARIO",
+                "description": "Noar Sentario",
+                "code": "448010"
+        },
+        {
+                "id": 158,
+                "name": "NOAR SENTARIO",
+                "description": "Noar Sentario",
+                "code": "447485"
+        },
+        {
+                "id": 159,
+                "name": "CIMATRA",
+                "description": "Cimatra",
+                "code": "447485"
+        },
+        {
+                "id": 160,
+                "name": "RUSSIA'S SMART",
+                "description": "Russia's Smart",
+                "code": "447485"
+        },
+        {
+                "id": 161,
+                "name": "TANDUAY",
+                "description": "Tanduay",
+                "code": "447485"
+        },
+        {
+                "id": 162,
+                "name": "BALECHE",
+                "description": "Baleche",
+                "code": "447485"
+        },
+        {
+                "id": 163,
+                "name": "BALECHE",
+                "description": "Baleche",
+                "code": "447485"
+        },
+        {
+                "id": 164,
+                "name": "COHN HAKIAGER",
+                "description": "Cohn Hakiager",
+                "code": "101312"
+        },
+        {
+                "id": 165,
+                "name": "Captain Morgan",
+                "description": "Captain Morgan Rum Black Spice",
+                "code": "103289"
+        },
+        {
+                "id": 166,
+                "name": "JOHNNIE WALKER",
+                "description": "Johnnie Walker Gold Label Reserve",
+                "code": "103288"
+        },
+        {
+                "id": 167,
+                "name": "COHN HAKIAGER",
+                "description": "Cohn Hakiager Blue Orange",
+                "code": "101312"
+        },
+        {
+                "id": 168,
+                "name": "ROSSI D'ASIAGO",
+                "description": "Rossi D'Asiago",
+                "code": "448313"
+        },
+        {
+                "id": 169,
+                "name": "ROSSI D'ASIAGO",
+                "description": "Rossi D'Asiago",
+                "code": "448312"
+        },
+        {
+                "id": 170,
+                "name": "Don Julio",
+                "description": "Don Julio Tequila Repose Anejo 38%",
+                "code": "96777"
+        },
+        {
+                "id": 171,
+                "name": "JACK DANIELS",
+                "description": "Jack Daniels Honey",
+                "code": "448311"
+        },
+        {
+                "id": 172,
+                "name": "Tarmajora",
+                "description": "Tarmajora Caffe Glace Scented 40%",
+                "code": "448310"
+        },
+        {
+                "id": 173,
+                "name": "DIPLOMAT",
+                "description": "Diplomat",
+                "code": "101014"
+        },
+        {
+                "id": 174,
+                "name": "j.BARRELS",
+                "description": "J.Barrels 3 Year Simple Malt Scotch Whisky",
+                "code": "448077"
+        },
+        {
+                "id": 175,
+                "name": "KAHLUA",
+                "description": "Kahlua Limited Premium Whisky",
+                "code": "96511"
+        },
+        {
+                "id": 176,
+                "name": "KAHLUA",
+                "description": "Kahlua Limited Premium White",
+                "code": "96510"
+        },
+        {
+                "id": 177,
+                "name": "JACK DANIELS",
+                "description": "Jack Daniels No.7 White Label",
+                "code": "127863"
+        },
+        {
+                "id": 178,
+                "name": "FINLANDIA",
+                "description": "Finlandia Flavor Royal Blue",
+                "code": "127848"
+        },
+        {
+                "id": 179,
+                "name": "JACK DANIELS",
+                "description": "Jack Daniels No.7 Royal Blue",
+                "code": "127848"
+        },
+        {
+                "id": 180,
+                "name": "Captain Morgan",
+                "description": "Captain Morgan Rum Black",
+                "code": "103288"
+        },
+        {
+                "id": 181,
+                "name": "LICOR 43",
+                "description": "Licor 43 Orange Big Glass 31%",
+                "code": "401366"
+        },
+        {
+                "id": 182,
+                "name": "JOHNNIE WALKER",
+                "description": "Johnnie Walker Blue Label Whisky 40%",
+                "code": "401366"
+        },
+        {
+                "id": 183,
+                "name": "ASBACH",
+                "description": "Asbach",
+                "code": "93036"
+        },
+        {
+                "id": 184,
+                "name": "HENDON",
+                "description": "Hendon",
+                "code": "93036"
+        },
+        {
+                "id": 185,
+                "name": "CASAL",
+                "description": "Casal",
+                "code": "447935"
+        },
+        {
+                "id": 186,
+                "name": "JOHNNIE WALKER",
+                "description": "Johnnie Walker",
+                "code": "401366"
+        },
+        {
+                "id": 187,
+                "name": "MOZART",
+                "description": "Mozart White Chocolate Cream",
+                "code": "401366"
+        },
+        {
+                "id": 188,
+                "name": "MOZART",
+                "description": "Mozart Chocolate Cream",
+                "code": "401366"
+        },
+        {
+                "id": 189,
+                "name": "JOHNNIE WALKER",
+                "description": "Johnnie Walker",
+                "code": "447935"
+        },
+        {
+                "id": 190,
+                "name": "JOHNNIE",
+                "description": "Johnnie",
+                "code": "447935"
+        },
+        {
+                "id": 191,
+                "name": "AMAZON",
+                "description": "Amazon",
+                "code": "445824"
+        },
+        {
+                "id": 192,
+                "name": "KEVER",
+                "description": "Kever",
+                "code": "445824"
+        },
+        {
+                "id": 193,
+                "name": "Kever",
+                "description": "Kever",
+                "code": "445824"
+        },
+        {
+                "id": 194,
+                "name": "BELUGA",
+                "description": "Beluga",
+                "code": "445824"
+        },
+        {
+                "id": 195,
+                "name": "DON JULIO",
+                "description": "Don Julio Tequila Classic Aged",
+                "code": "445820"
+        },
+        {
+                "id": 196,
+                "name": "ROSSI D'ASIAGO",
+                "description": "Rossi D'Asiago",
+                "code": "445820"
+        },
+        {
+                "id": 197,
+                "name": "ROSSI D'ASIAGO",
+                "description": "Rossi D'Asiago Gironde Chrome 10 Year",
+                "code": "445820"
+        },
+        {
+                "id": 198,
+                "name": "Tamarisk",
+                "description": "Tamarisk Chromatically Cast Bottle 0.7L",
+                "code": "445808"
+        },
+        {
+                "id": 199,
+                "name": "JAEGERMEISTER",
+                "description": "Jaegermeister 36%",
+                "code": "445808"
+        },
+        {
+                "id": 200,
+                "name": "SHERRIS",
+                "description": "Sherris",
+                "code": "101871"
+        },
+        {
+                "id": 201,
+                "name": "T WALKER",
+                "description": "T Walker",
+                "code": "101871"
+        },
+        {
+                "id": 202,
+                "name": "SHERRIS",
+                "description": "Sherris Shoho Liu 15 Letni",
+                "code": "65869"
+        },
+        {
+                "id": 203,
+                "name": "USA KINO",
+                "description": "USA Kino",
+                "code": "65869"
+        },
+        {
+                "id": 204,
+                "name": "BERELECHE",
+                "description": "Bereleche",
+                "code": "65869"
+        },
+        {
+                "id": 205,
+                "name": "KAI",
+                "description": "Kai",
+                "code": "448813"
+        },
+        {
+                "id": 206,
+                "name": "KAI",
+                "description": "Kai",
+                "code": "448814"
+        },
+        {
+                "id": 207,
+                "name": "BERELECHE",
+                "description": "Bereleche",
+                "code": "65869"
+        },
+        {
+                "id": 208,
+                "name": "BERELECHE",
+                "description": "Bereleche",
+                "code": "65869"
+        },
+        {
+                "id": 209,
+                "name": "KAFER",
+                "description": "Kafer",
+                "code": "65856"
+        },
+        {
+                "id": 210,
+                "name": "SHERRIS",
+                "description": "Sherris",
+                "code": "65856"
+        },
+        {
+                "id": 211,
+                "name": "JAEGRON",
+                "description": "Jaegron",
+                "code": "65856"
+        },
+        {
+                "id": 212,
+                "name": "SHERRIS",
+                "description": "Sherris",
+                "code": "65856"
+        },
+        {
+                "id": 213,
+                "name": "MART ELL",
+                "description": "Martell",
+                "code": "101820"
+        },
+        {
+                "id": 214,
+                "name": "GRANT",
+                "description": "Grant",
+                "code": "101820"
+        },
+        {
+                "id": 215,
+                "name": "MART ELL",
+                "description": "Martell",
+                "code": "101820"
+        },
+        {
+                "id": 216,
+                "name": "GRAND MARNIER",
+                "description": "Grand Marnier",
+                "code": "225070"
+        },
+        {
+                "id": 217,
+                "name": "GRAND MARNIER",
+                "description": "Grand Marnier",
+                "code": "225070"
+        },
+        {
+                "id": 218,
+                "name": "TULLAMORE DEW",
+                "description": "Tullamore Dew Single",
+                "code": "448076"
+        },
+        {
+                "id": 219,
+                "name": "GH De Groot",
+                "description": "GH De Groot",
+                "code": "448076"
+        },
+        {
+                "id": 220,
+                "name": "SOUTHERN",
+                "description": "Southern",
+                "code": "448076"
+        },
+        {
+                "id": 221,
+                "name": "BSHI MILLE",
+                "description": "Bishi Mille",
+                "code": "448332"
+        },
+        {
+                "id": 222,
+                "name": "BACARDI",
+                "description": "Bacardi",
+                "code": "448332"
+        },
+        {
+                "id": 223,
+                "name": "monkey shoulder",
+                "description": "Monkey Shoulder",
+                "code": "447220"
+        },
+        {
+                "id": 224,
+                "name": "JACK",
+                "description": "Jack Daniels Black Label",
+                "code": "447161"
+        },
+        {
+                "id": 225,
+                "name": "BODY NIST",
+                "description": "Body Nist Premium Rum",
+                "code": "447161"
+        },
+        {
+                "id": 226,
+                "name": "LARUIAGE",
+                "description": "Laruiage",
+                "code": "447168"
+        },
+        {
+                "id": 227,
+                "name": "BODY NIST",
+                "description": "Body Nist",
+                "code": "447168"
+        },
+        {
+                "id": 228,
+                "name": "ROLAMO",
+                "description": "Rolamo",
+                "code": "447168"
+        },
+        {
+                "id": 229,
+                "name": "BACARDI SPICE",
+                "description": "Bacardi Spice",
+                "code": "447287"
+        },
+        {
+                "id": 230,
+                "name": "Don Julio",
+                "description": "Don Julio Tequila Blanco Anejo 38%",
+                "code": "447287"
+        },
+        {
+                "id": 231,
+                "name": "JACK DANIELS",
+                "description": "Jack Daniels Apple",
+                "code": "447286"
+        },
+        {
+                "id": 232,
+                "name": "ROYAL SALUTE",
+                "description": "Royal Salute Red Label Anejo 43%",
+                "code": "447616"
+        },
+        {
+                "id": 233,
+                "name": "ROYAL SALUTE",
+                "description": "Royal Salute Red Label 43%",
+                "code": "447617"
+        },
+        {
+                "id": 234,
+                "name": "ROYAL SALUTE",
+                "description": "Royal Salute Red Label 43%",
+                "code": "447618"
+        },
+        {
+                "id": 235,
+                "name": "Holanda",
+                "description": "Holanda General Arterial",
+                "code": "447002"
+        },
+        {
+                "id": 236,
+                "name": "Holanda",
+                "description": "Holanda General Arterial Wine",
+                "code": "447003"
+        },
+        {
+                "id": 237,
+                "name": "BAKARDI",
+                "description": "Bakardi Alcohol de Pollo",
+                "code": "447004"
+        },
+        {
+                "id": 238,
+                "name": "Tamnavulin",
+                "description": "Tamnavulin",
+                "code": "448904"
+        },
+        {
+                "id": 239,
+                "name": "SINGLETON",
+                "description": "The Singleton",
+                "code": "447476"
+        },
+        {
+                "id": 240,
+                "name": "M&A Aged",
+                "description": "M&A Aged",
+                "code": "447468"
+        },
+        {
+                "id": 241,
+                "name": "M&A Aged",
+                "description": "M&A Aged Reserve",
+                "code": "447469"
+        },
+        {
+                "id": 242,
+                "name": "KAHLUA",
+                "description": "Kahlua Coffee Liqueur",
+                "code": "96510"
+        },
+        {
+                "id": 243,
+                "name": "Gen Scoria",
+                "description": "Gen Scoria Tulam",
+                "code": "448096"
+        },
+        {
+                "id": 244,
+                "name": "Kactus Milky",
+                "description": "Kactus Milky Whit Tia Maria",
+                "code": "448095"
+        },
+        {
+                "id": 245,
+                "name": "Tomintoul",
+                "description": "Tomintoul Duende",
+                "code": "448303"
+        },
+        {
+                "id": 246,
+                "name": "Tomintoul",
+                "description": "Tomintoul Tlàth",
+                "code": "448302"
+        },
+        {
+                "id": 247,
+                "name": "Tomintoul",
+                "description": "Tomintoul Tlàth",
+                "code": "448301"
+        },
+        {
+                "id": 248,
+                "name": "ROYAL SALUTE",
+                "description": "Royal Salute Steel",
+                "code": "447767"
+        },
+        {
+                "id": 249,
+                "name": "ROYAL SALUTE",
+                "description": "Royal Salute Steel Barrel",
+                "code": "447766"
+        },
+        {
+                "id": 250,
+                "name": "BOYMADGE",
+                "description": "Boymadge 9 Isle",
+                "code": "447783"
+        },
+        {
+                "id": 251,
+                "name": "BOYMORE",
+                "description": "Boymore Ron Stanfield",
+                "code": "447956"
+        },
+        {
+                "id": 252,
+                "name": "MAXIMUS",
+                "description": "Maximus Ron Stanfield",
+                "code": "447951"
+        },
+        {
+                "id": 253,
+                "name": "Siete Millas",
+                "description": "Siete Millas Specialty",
+                "code": "447708"
+        },
+        {
+                "id": 254,
+                "name": "Gin Mata",
+                "description": "Gin Mata Modernista",
+                "code": "447741"
+        },
+        {
+                "id": 255,
+                "name": "Tere mana",
+                "description": "Tere mana Premiere",
+                "code": "447705"
+        },
+        {
+                "id": 256,
+                "name": "RUBIN MILLS",
+                "description": "Rubin Mills Business YODA",
+                "code": "447901"
+        },
+        {
+                "id": 257,
+                "name": "RUBIN MILLS",
+                "description": "Rubin Mills Business YODA 100ML",
+                "code": "447902"
+        },
+        {
+                "id": 258,
+                "name": "RUBIN MILLS",
+                "description": "Rubin Mills The Kitchen",
+                "code": "447904"
+        },
+        {
+                "id": 259,
+                "name": "Refaeli",
+                "description": "Refaeli Yuval Spirits",
+                "code": "448511"
+        },
+        {
+                "id": 260,
+                "name": "FDH",
+                "description": "FDH Old Pulteney",
+                "code": "447889"
+        },
+        {
+                "id": 261,
+                "name": "YAMAZAKI",
+                "description": "Yamazaki Kavalan Limited",
+                "code": "447957"
+        },
+        {
+                "id": 262,
+                "name": "BAT",
+                "description": "Bat Hendricks Bubblegum",
+                "code": "447951"
+        },
+        {
+                "id": 263,
+                "name": "HRDLORICKA",
+                "description": "Hrdloricka Sliwovice",
+                "code": "447775"
+        },
+        {
+                "id": 264,
+                "name": "EPRATA",
+                "description": "Eprata Israeli Red Grape Ananas",
+                "code": "447874"
+        },
+        {
+                "id": 265,
+                "name": "EPRATA",
+                "description": "Eprata Israeli Red Grape",
+                "code": "447873"
+        },
+        {
+                "id": 266,
+                "name": "MOZART",
+                "description": "Mozart Chocolate Cream Pumpkin",
+                "code": "447945"
+        }
+];
+
+        const searchInput = document.getElementById('searchInput');
+        const tableBody = document.getElementById('tableBody');
+        const resultCount = document.getElementById('resultCount');
+        const noResults = document.getElementById('noResults');
+        const productsTable = document.getElementById('productsTable');
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function highlightText(text, search) {
+            if (!search) return escapeHtml(text);
+
+            const escapedText = escapeHtml(text);
+            const regex = new RegExp(`(${search})`, 'gi');
+            return escapedText.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        function renderTable(filteredProducts, searchTerm = '') {
+            tableBody.innerHTML = '';
+
+            if (filteredProducts.length === 0) {
+                noResults.style.display = 'block';
+                productsTable.style.display = 'none';
+            } else {
+                noResults.style.display = 'none';
+                productsTable.style.display = 'table';
+
+                filteredProducts.forEach(product => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="product-id">#${product.id}</td>
+                        <td><div class="product-name">${highlightText(product.name, searchTerm)}</div></td>
+                        <td>${highlightText(product.description, searchTerm)}</td>
+                        <td><span class="product-code">${highlightText(product.code, searchTerm)}</span></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            resultCount.textContent = filteredProducts.length;
+        }
+
+        function searchProducts(query) {
+            const searchTerm = query.toLowerCase().trim();
+
+            if (searchTerm === '') {
+                return products;
+            }
+
+            return products.filter(product => 
+                product.name.toLowerCase().includes(searchTerm) ||
+                product.description.toLowerCase().includes(searchTerm) ||
+                product.code.toLowerCase().includes(searchTerm) ||
+                product.id.toString().includes(searchTerm)
+            );
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value;
+            const filtered = searchProducts(searchTerm);
+            renderTable(filtered, searchTerm.trim());
+        });
+
+        // טעינה ראשונית
+        renderTable(products);
+
+        // מיקוד אוטומטי בשדה החיפוש
+        searchInput.focus();
+    </script>
+</body>
+</html>
